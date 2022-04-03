@@ -120,11 +120,13 @@ function handleUpdate(data: any) {
 				monitorarProximosJogos = 0;
 			} else {
 				monitorarProximosJogos--;
-				stake *= 2;
-				banca -= stake;
 				if(monitorarProximosJogos == 0) { 
 					enviaLost();
 					stake = STAKE_INICIAL;
+				}
+				else { 
+					stake *= 2;
+					banca -= stake;
 				}
 			}
 		}
