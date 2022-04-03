@@ -1,0 +1,1 @@
+# Bot criado para procurar padroes no Blaze e enviar no Telegram
