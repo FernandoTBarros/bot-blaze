@@ -10,6 +10,4 @@ services:
     environment:
       NODE_ENV: production
       TZ: 'America/Sao_Paulo'
-    volumes:
-      - ./data:/app/data
     restart: unless-stopped

@@ -10,6 +10,9 @@ let webSocket: WebSocket;
 let webSocketHeartBeatTimeout: NodeJS.Timeout;
 const sequenceCrashPoints:number[] = [];
 let monitorarProximosJogos = 0;
+let banca = Number.parseInt(process.env.BANCA_INICIAL || '100');
+const STAKE_INICIAL = Number.parseInt(process.env.STAKE || '4');
+let stake = STAKE_INICIAL;
 
 import patterns from "./patterns.json";
 
@@ -111,12 +114,17 @@ function handleUpdate(data: any) {
 		const crashPoint = parseInt(data.payload.crash_point.split(".")[0]);
 		if(monitorarProximosJogos > 0) {
 			if(crashPoint >= 2) {
-				monitorarProximosJogos = 0;
+				banca += stake * 2;
+				stake = STAKE_INICIAL;
 				enviaGreen();
+				monitorarProximosJogos = 0;
 			} else {
 				monitorarProximosJogos--;
+				stake *= 2;
+				banca -= stake;
 				if(monitorarProximosJogos == 0) { 
 					enviaLost();
+					stake = STAKE_INICIAL;
 				}
 			}
 		}
@@ -126,6 +134,7 @@ function handleUpdate(data: any) {
 		console.log(sequenceCrashPoints)
 		if(patterns.some(p => isEqual(p, sequenceCrashPoints.slice(0,2) || isEqual(p, sequenceCrashPoints)))) {
 			enviaJogada(crashPoint);
+			banca -= stake;
 			monitorarProximosJogos = 3;
 		}
 	}
@@ -137,15 +146,16 @@ async function enviaJogada(crashPoint: number) {
 	enviarMsgTg(msg, '130499250');
 }
 async function enviaGreen() {
-	const msg = `✅ <b>Green!</b> 🤑💰`;
+	const numMartinGales = (3-monitorarProximosJogos);
+	const msg = `✅ <b>Green ${numMartinGales > 0 ? "após " + numMartinGales + " MartinGale": ""}!</b> 🤑💰`;
 	console.log(msg);
-	enviarMsgTg(msg);
+	enviarMsgTg(msg + "\nBanca: " + banca);
 	enviarMsgTg(msg, '130499250');
 }
 async function enviaLost() {
 	const msg = `😪 LOSS! Bora recuperar 🚀`;
 	console.log(msg);
-	enviarMsgTg(msg);
+	enviarMsgTg(msg + "\nBanca: " + banca);
 	enviarMsgTg(msg, '130499250');
 }
 
