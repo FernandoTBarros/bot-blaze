@@ -5,6 +5,7 @@ import isEqual from 'lodash.isequal';
 
 const BLAZE_WS_URL = "wss://api-v2.blaze.com/replication/?EIO=3&transport=websocket"
 const BOT_TELEGRAM_TOKEN = process.env.BOT_TELEGRAM_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
 let conectarWS = true;
 let webSocket: WebSocket;
 let webSocketHeartBeatTimeout: NodeJS.Timeout;
@@ -145,23 +146,20 @@ async function enviaJogada(crashPoint: number) {
 	const msg = `Entrar após o -> ${crashPoint}x\n🤑Auto retirar no 1.90x\n📌Realizar 2 MartinGales`;
 	console.log(msg);
 	enviarMsgTg(msg);
-	enviarMsgTg(msg, '130499250');
 }
 async function enviaGreen() {
 	const numMartinGales = (3-monitorarProximosJogos);
 	const msg = `✅ <b>Green ${numMartinGales > 0 ? "após " + numMartinGales + " MartinGale": ""}!</b> 🤑💰`;
 	console.log(msg);
 	enviarMsgTg(msg + "\nBanca: " + banca);
-	enviarMsgTg(msg, '130499250');
 }
 async function enviaLost() {
 	const msg = `😪 LOSS! Bora recuperar 🚀`;
 	console.log(msg);
 	enviarMsgTg(msg + "\nBanca: " + banca);
-	enviarMsgTg(msg, '130499250');
 }
 
-async function enviarMsgTg(mensagem: string, chatId: string='163786145') {
+async function enviarMsgTg(mensagem: string, chatId: string=TELEGRAM_CHAT_ID) {
 	const tgMsg = {
 		chat_id: chatId,
 		text: mensagem,
